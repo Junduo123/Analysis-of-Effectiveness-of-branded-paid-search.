@@ -1,0 +1,291 @@
+---
+title: "2019 MMA Datathon"
+author: "Junduo Dong"
+date: "10/13/2019"
+output: html_document
+---
+
+<br />
+
+##### This is the R markdown file for 2019 MMA Online Datathon. <br />
+##### Team name: Techie Prophets. <br />
+##### Team members: James(Xiao) Chen, Lily(Lan Xiazi) Liu, Junduo Dong <br />
+##### The Following R-code provide brief EDA, Test of Independecs and Statistical Testing <br />
+
+<br />
+```{r  results='hide',message=FALSE,warning=FALSE}
+library(readxl, quietly = TRUE)
+library(psych, quietly = TRUE)
+library(funModeling, quietly = TRUE)
+library(tidyverse, quietly = TRUE)
+library(scales, quietly = TRUE)
+```
+
+```{r  }
+data <- read_excel("~/Desktop/桌面/一堆乱七八糟的为了不让桌面看起来乱糟糟的文件/2019fall/MMA Datathon/SOBSS data.xlsx")
+attach(data)
+```
+
+```{r  }
+# Categorical Feature Analysis
+getDataFrameWith50Categories <- function(df){
+  # Convert all features to categorical data
+  factorDF <- mutate_all(df, function(x) as.factor(x))
+  # extract names of each features
+  features <- names(factorDF)
+  for (feature in features) {
+    # if the level of feature is greater than 50, then it is a continous variable and we remove the feature
+    if(length(levels(factorDF[,feature]))>50){
+      factorDF[feature] <- NULL
+    }
+  }
+  return(factorDF)
+}
+
+categoricalData <- getDataFrameWith50Categories(data)
+```
+
+```{r  pressure, echo=FALSE}
+# plot each variable with bar plot
+par(mfrow=c(3,2))
+for (i in 1: length(categoricalData[,c(1:14)])){
+  plot(categoricalData[i],
+       xlab = names(categoricalData[,i]))
+}
+
+```
+
+```{r  }
+# distribution of three main numeric variables
+myvars <- c('Users','NewUsers','Trials')
+
+# calcualte descriptive statistics
+mystats <- function(x, na.omit = FALSE){
+  if (na.omit)
+    x <- x[!is.na(x)]
+  m <- mean(x)
+  n <- length(x)
+  s <- sd(x)
+  # skewness
+  skew <- sum((x-m)^3/s^3)/n
+  # kurtosis
+  kurt <- sum((x-m)^4/s^4)/n-3
+  return(c(n=n,mean=m,stdev=s,skew=skew,kurtosis=kurt))
+}
+
+sapply(data[myvars], mystats)
+# right-skewed distribution (mode is greater than median, and mean is greater than median)
+# overall, the conversion contains mostly '0'
+# median value might between 0 and 1
+# the value of kurtosis shows there are some extreme values, these number appreas mostly during pre and post experiment
+
+```
+
+```{r  }
+# summary statistics by 'Time Period'
+dstats <- function(x)sapply(x, mystats)
+by(data[myvars],data$`Time Period`,dstats)
+# during test period, the conversion is slightly higher than pre and post period
+# conversion value from 3-6, 96 records 
+by(data[myvars], data$Channel,dstats)
+# SEO has higher conversion about 0.09 than PPC Branded
+```
+
+```{r  }
+# consider why there is a pre and post experiment
+# control variation ?
+# test effectiveness of branded paid search tp conversion rate through different time period ?
+# why SEO is higher than PS ?
+```
+
+```{r  }
+# one thing interesting before test
+# becuase there is a two-hour time blocks to turn on and off for branded PS
+# so we are curious about the effectiveness for control and test group during the test time period
+```
+
+```{r  }
+# during test period, the control and test group's performance seems different between Canada and US
+data$Country <- as.factor(data$Country)
+data$`Hour Designation (during test period)` <- as.factor(data$`Hour Designation (during test period)`)
+
+d <- data %>%
+  group_by(Country, `Hour Designation (during test period)`) %>%
+  filter(`Time Period` == 'Test') %>%
+  summarise(Count = sum(Trials)) %>%
+  mutate(Ratio = Count / sum(Count),
+         label = percent(Ratio %>% round(5)))
+d <- as.data.frame(d)
+
+ggplot(d, aes(x = `Hour Designation (during test period)`, y = Ratio)) +
+  geom_bar(stat = 'identity') +
+  facet_grid(~Country) +
+  geom_text(aes(label = round(Ratio,3), y = Ratio + 0.04))
+# percent differences between control and test group for Canada is 2.8%
+# percent differences between control and test group for US is 26.57%
+# Assumption: There is statistical siginfiant different of conversion rate between two countries
+# we will interpret statistical tetsing to test the assumption later
+```
+
+```{r  }
+# Q2: Is there evidence that SEO results compensate for branded PS when the latter is turned off ?
+```
+
+```{r  warning=FALSE}
+# Assumption1: the ratio is dependent with country
+# Chi-square independence test between conversion and country
+mytable <- xtabs(~Country+Ratio, data = d)
+chisq.test(mytable)
+# as the p-value 0.2615 is greater than 0.05 significance level, we do not reject the null hypothesis
+# that country and ratio are independent
+```
+
+```{r  warning=FALSE}
+# Assumption2 : the Channel and conversions are independent to each other
+mytable2 <- xtabs(~Channel+Trials, data = data)
+chisq.test(mytable2)
+# as the p-value is smaller than 0.05 significant level, we reject the null hypothesis 
+# that channel and trials are independent to each other
+```
+
+```{r  warning=FALSE}
+# Assumption3 : the experiment time period are independent to each other
+mytable3 <- xtabs(~`Time Period`+Trials, data = data)
+chisq.test(mytable3)
+# as the p-value is smaller than 0.05 significant level, we reject the null hypothesis
+# that experiemnt time period are independent to each other
+
+# and that is why we need pre-post experiment
+# so we have to consider a dependent groups design in some of our t-test
+```
+
+```{r  }
+# t-test 
+
+# Although we know that different channel and time period is not independent to each other, but we still
+# want to know if SEO compensate for branded PS when the latter is turned off
+```
+
+```{r  }
+# t-test1: test period
+d1 <- data %>% select(Click_through_rate) %>%
+  filter(Channel == "PPC Branded" & `Hour Designation (during test period)` == "control" & 
+           `Time Period` == "Test")
+d2 <- data %>% select(Click_through_rate) %>%
+  filter(Channel == "SEO" & `Hour Designation (during test period)` == "control" & 
+           `Time Period` == "Test")
+test_d1 <- cbind(d1,d2)
+names(test_d1)[1] <- "PPC_Branded_CTR"
+names(test_d1)[2] <- "SEO_Branded_CTR"
+
+sapply(test_d1[c("PPC_Branded_CTR","SEO_Branded_CTR")], function(x) (c(mean=mean(x),sd=sd(x))))
+```
+
+```{r }
+with(test_d1, t.test(PPC_Branded_CTR,SEO_Branded_CTR, paired = TRUE))
+# The p-value is less than 0.01, so we reject the null hypothesis that when PPS Branded turn off, the CTR between PPC Branded and SEO are same
+# If I turn off the PPC Branded, the CTR of users from PPC Branded will less than SEO about 19.79%
+```
+
+```{r  }
+# t-test1_1: test period
+d1_1 <- data %>% select(click_through_prob) %>%
+  filter(Channel == "PPC Branded" & `Hour Designation (during test period)` == "control" & 
+           `Time Period` == "Test")
+d2_1 <- data %>% select(click_through_prob) %>%
+  filter(Channel == "SEO" & `Hour Designation (during test period)` == "control" & 
+           `Time Period` == "Test")
+test_d1_1 <- cbind(d1_1,d2_1)
+names(test_d1_1)[1] <- "PPC_Branded_CTP"
+names(test_d1_1)[2] <- "SEO_Branded_CTP"
+
+sapply(test_d1_1[c("PPC_Branded_CTP","SEO_Branded_CTP")], function(x) (c(mean=mean(x),sd=sd(x))))
+with(test_d1_1, t.test(PPC_Branded_CTP,SEO_Branded_CTP, paired = TRUE))
+# The p-value is less than 0.01, so we reject the null hypothesis that when PPS Branded turn off, the CTP between PPC Branded and SEO are same
+# If I turn off the PPC Branded, the CTP of users from PPC Branded will less than SEO about 5.14%
+
+```
+
+```{r  }
+# t-test2: do not consider test period
+d3 <- data %>% select(Click_through_rate) %>%
+  filter(Channel == "PPC Branded" & `Hour Designation (during test period)` == "control")
+d4 <- data %>% select(Click_through_rate) %>%
+  filter(Channel == "SEO" & `Hour Designation (during test period)` == "control")
+test_d2 <- cbind(d3,d4)
+names(test_d2)[1] <- "PPC_Branded_CTR"
+names(test_d2)[2] <- "SEO_Branded_CTR"
+
+# The assumption of difference between the hypothetical groups of non-independent samples is normally distributed
+sapply(test_d2[c("PPC_Branded_CTR","SEO_Branded_CTR")], function(x) (c(mean=mean(x),sd=sd(x))))
+
+with(test_d2, t.test(PPC_Branded_CTR,SEO_Branded_CTR, paired = TRUE))
+# the p-value is smaller than 0.05
+# which means, we reject the null hypothesis that the CTR is the same between SEO and PPC Branded when the latter is turn off
+
+```
+
+```{r  }
+with(test_d2, t.test(PPC_Branded_CTR,SEO_Branded_CTR, paired = TRUE, alternative = "less"))
+# the p-value is greater than 0.05, which means we accept the null hypothesis
+# the CTR from PPC Branded is less than SEO about 11.89% averagely when PPC Branded is turn off
+```
+
+```{r  }
+# t-test3: Trials vs test period
+d5 <- data %>% select(Click_through_rate,`Hour Designation (during test period)`) %>% filter(Country == "Canada" & `Time Period` == "Test")
+t.test(Click_through_rate~`Hour Designation (during test period)`, data = d5)
+# during the test period, the CTR of PPC Branded is higher than when its turned off about 11% averagely in Canada
+```
+
+```{r  }
+d5_1 <- data %>% select(click_through_prob,`Hour Designation (during test period)`) %>% filter(Country == "Canada" & `Time Period` == "Test")
+t.test(click_through_prob~ `Hour Designation (during test period)`, data = d5_1)
+# during the test period, the Conversion rate of PPC Branded is higher than when its turned off about 2% in Canada
+```
+
+```{r  }
+d6 <- data %>% select(Click_through_rate,`Hour Designation (during test period)`) %>% filter(Country == "United States" & `Time Period` == "Test")
+t.test(Click_through_rate~`Hour Designation (during test period)`, data = d6)
+# during the test period, the CTP of PPC Branded is higher than when its turned off about 14% averagely in US
+```
+
+```{r  }
+d6_1 <- data %>% select(click_through_prob,`Hour Designation (during test period)`) %>% filter(Country == "United States" & `Time Period` == "Test")
+t.test(click_through_prob~ `Hour Designation (during test period)`, data = d6_1)
+# during the test period, the Conversion rate of PPC Branded is higher than when its turned off about 1.5% in US
+```
+
+```{r  }
+# t-test4: Conversion by Country
+# Canada
+d7 <- data %>% select(Click_through_rate) %>%
+  filter(Channel == "PPC Branded" & `Hour Designation (during test period)` == "control" & Country == "Canada")
+d8 <- data %>% select(Click_through_rate) %>%
+  filter(Channel == "SEO" & `Hour Designation (during test period)` == "control" & Country == "Canada")
+test_d3 <- cbind(d7,d8)
+names(test_d3)[1] <- "PPC_Branded_CTR_Canada"
+names(test_d3)[2] <- "SEO_Branded_CTR_Canada"
+
+sapply(test_d3[c("PPC_Branded_CTR_Canada","SEO_Branded_CTR_Canada")], function(x) (c(mean=mean(x),sd=sd(x))))
+with(test_d3, t.test(PPC_Branded_CTR_Canada,SEO_Branded_CTR_Canada, paired = TRUE))
+# Statistically significane differences in means between PPC Branded and SEO through pre, test and post experiment period
+# If the PPC Branded turned off, the CTR of trials in Canada is lower than SEO about 11.28%
+```
+
+```{r  }
+# United States
+d9 <- data %>% select(Click_through_rate) %>%
+  filter(Channel == "PPC Branded" & `Hour Designation (during test period)` == "control" & Country == "United States")
+d10 <- data %>% select(Click_through_rate) %>%
+  filter(Channel == "SEO" & `Hour Designation (during test period)` == "control" & Country == "United States")
+test_d4 <- cbind(d9,d10)
+names(test_d4)[1] <- "PPC_Branded_Trials_United_States"
+names(test_d4)[2] <- "SEO_Branded_Trials_United_States"
+
+sapply(test_d4[c("PPC_Branded_Trials_United_States","SEO_Branded_Trials_United_States")], function(x) (c(mean=mean(x),sd=sd(x))))
+with(test_d4, t.test(PPC_Branded_Trials_United_States,SEO_Branded_Trials_United_States, paired = TRUE))
+# Statistically significane differences in means between PPC Branded and SEO
+# If the PPC Branded turned off, the CTR of trials in US is lower than SEO about 12.5%
+```
+
