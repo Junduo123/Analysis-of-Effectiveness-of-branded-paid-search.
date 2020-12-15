@@ -2,7 +2,7 @@
 [2019 University of Toronto Master of Management Science Data Hackthon](https://www.rotman.utoronto.ca/Degrees/MastersPrograms/SpecializedProgramsBlog/MMA/MMA-Online-Datathon-2019-Participants-Stories) <img src='figures/MMA2019logo.png' align="right" height="180"/>
 
 ## Challenge: 
-Analysis-of-Effectiveness-of-branded-paid-search 
+Analysis of Effectiveness of branded paid search 
 -  `Team name`: Techie Prophets
 - `Team members`: [James(Xiao) Chen](https://www.linkedin.com/in/james-chen-718480a/), [Lily(Lan Xiazi) Liu](https://www.linkedin.com/in/lanxiaziliu/), [Oliver (Junduo) Dong](https://www.linkedin.com/in/junduo-dong/)
 
