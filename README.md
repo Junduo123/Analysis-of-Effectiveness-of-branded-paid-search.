@@ -4,7 +4,7 @@
 ## Challenge: 
 Analysis-of-Effectiveness-of-branded-paid-search 
 -  `Team name`: Techie Prophets
-- `Team members`: James(Xiao) Chen, Lily(Lan Xiazi) Liu, Oliver (Junduo) Dong
+- `Team members`: [James(Xiao) Chen](https://www.linkedin.com/in/james-chen-718480a/), [Lily(Lan Xiazi) Liu](https://www.linkedin.com/in/lanxiaziliu/), [Oliver (Junduo) Dong](https://www.linkedin.com/in/junduo-dong/)
 
 ## Background
 - By 2018, dozens of competitiors in SOBSS (Simple On-Line Business Solutions) space when people searching for "business solutions for small business". Attracting  new customers became both harder and more expensive.
