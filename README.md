@@ -15,8 +15,6 @@ Analysis-of-Effectiveness-of-branded-paid-search
 - CMO insists that Branded PS is the most efficient marketing channel
 - CEO, however, argues that marketing spend on Branded PS is misguided and he predicts when Branded PS turn off customers will find the website through organic search, therefore spending should be redirected to Non-Branded PS or other channels 
 
-
-
 **Presentation Slides:** This is our presentation slides outlining our analytical roadmap, findings, recommendations, along with appendix: [Presentation Slides](https://docs.google.com/presentation/d/10_JqbrgVCmrWno5j5xJgkak4UfLHnHvUg8DcKBmpVsc/edit)
 
 **Useful Code:** We use R language as our analytical tool to conduct statistical test for this challenge: [Code.Rmd](https://github.com/Junduo123/Analysis-of-Effectiveness-of-branded-paid-search./blob/master/2019_MMA_Datahon%20copy.Rmd)
