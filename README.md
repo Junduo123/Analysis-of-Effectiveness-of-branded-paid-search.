@@ -1,5 +1,5 @@
 # Competition: 2019 University of Toronto Master of Management Science Data Hackthon
-# Challenge: Analysis-of-Effectiveness-of-branded-paid-search <a href = "https://www.rotman.utoronto.ca/Degrees/MastersPrograms/SpecializedProgramsBlog/MMA/MMA-Online-Datathon-2019-Participants-Stories">><img scr = 'figures/MMA2019logo.png' align='right' height="139 /></a>
+# Challenge: Analysis-of-Effectiveness-of-branded-paid-search <a href = "https://www.rotman.utoronto.ca/Degrees/MastersPrograms/SpecializedProgramsBlog/MMA/MMA-Online-Datathon-2019-Participants-Stories"><img scr = 'figures/MMA2019logo.png' align='right' height="139 /></a>
 
 
 # Team name: Techie Prophets
