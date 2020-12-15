@@ -17,7 +17,7 @@ Analysis-of-Effectiveness-of-branded-paid-search
 
 **Presentation Slides:** This is our presentation slides outlining our analytical roadmap, findings, recommendations, along with appendix: [Presentation Slides](https://docs.google.com/presentation/d/10_JqbrgVCmrWno5j5xJgkak4UfLHnHvUg8DcKBmpVsc/edit)
 
-**Useful Code:** We use R language as our analytical tool to conduct statistical test for this challenge: [Code.R]<'2019_MMA_Datahon copy.Rmd'>
+**Useful Code:** We use R language as our analytical tool to conduct statistical test for this challenge: [Code.R]('2019_MMA_Datahon copy.Rmd')
 
 Our Team's submission to the Datathon heald at University of Toronto, Oct 9 2019. Won Third place
 
