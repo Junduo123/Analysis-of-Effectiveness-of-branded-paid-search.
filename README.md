@@ -19,6 +19,6 @@ Analysis of Effectiveness of branded paid search
 
 **Useful Code:** We use R language as our analytical tool to conduct statistical test for this challenge: [Code.Rmd](https://github.com/Junduo123/Analysis-of-Effectiveness-of-branded-paid-search./blob/master/2019_MMA_Datahon%20copy.Rmd)
 
-Our Team's submission to the Datathon held at University of Toronto, Oct 9 2019. Won Third place
+Our Team's submission to the Datathon held at University of Toronto, Oct 9 2019. Third place Finalist
 
 
