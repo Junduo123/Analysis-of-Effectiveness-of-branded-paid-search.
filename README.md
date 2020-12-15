@@ -3,8 +3,8 @@
 
 ### Challenge: 
 Analysis-of-Effectiveness-of-branded-paid-search 
-- Team name: Techie Prophets
-- Team members: James(Xiao) Chen, Lily(Lan Xiazi) Liu, Oliver (Junduo) Dong
+-  `Team name`: Techie Prophets
+- `Team members`: James(Xiao) Chen, Lily(Lan Xiazi) Liu, Oliver (Junduo) Dong
 
 Our Team's submission to the Datathon heald at University of Toronto, Oct 9 2019. Won Third place
 
