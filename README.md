@@ -1,5 +1,5 @@
 ## Competition:
-[2019 University of Toronto Master of Management Science Data Hackthon](https://www.rotman.utoronto.ca/Degrees/MastersPrograms/SpecializedProgramsBlog/MMA/MMA-Online-Datathon-2019-Participants-Stories) <img src='figures/MMA2019logo.png' align="right" height="160"/>
+[2019 University of Toronto Master of Management Science Data Hackthon](https://www.rotman.utoronto.ca/Degrees/MastersPrograms/SpecializedProgramsBlog/MMA/MMA-Online-Datathon-2019-Participants-Stories) <img src='figures/MMA2019logo.png' align="right" height="180"/>
 
 ## Challenge: 
 Analysis-of-Effectiveness-of-branded-paid-search 
